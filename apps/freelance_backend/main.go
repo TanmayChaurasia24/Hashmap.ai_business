@@ -26,6 +26,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	routes.ClientsRoutes(mux)
+	routes.JobsRoutes(mux)
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},

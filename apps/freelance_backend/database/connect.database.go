@@ -12,6 +12,7 @@ import (
 
 var (
 	CompanyCollection *mongo.Collection
+	JobsCollection    *mongo.Collection
 )
 
 func ConnectDB() {
@@ -32,8 +33,13 @@ func ConnectDB() {
 	fmt.Println("✅ Connected to the database successfully!")
 
 	CompanyCollection = client.Database("prohirecompanies").Collection("companies")
+	JobsCollection = client.Database("prohirecompanies").Collection("jobs")
 }
 
 func GetCompanyCollection() *mongo.Collection {
 	return CompanyCollection
+}
+
+func GetJobsCollection() *mongo.Collection {
+	return JobsCollection
 }
