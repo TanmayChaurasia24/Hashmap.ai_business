@@ -1,0 +1,53 @@
+# Binaries and build artifacts
+/bin/
+/build/
+*.exe
+*.out
+*.o
+*.a
+*.so
+*.dll
+
+# Vendor dependencies (if using vendoring)
+vendor/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.iml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Golang-specific files
+/go.work
+/go.work.sum
+/go.sum
+/go.mod~
+
+# Generated files
+*.test
+*.cover
+*.prof
+
+# Environment variables and credentials
+.env
+.env.local
+.env.production
+.env.development
+
+# Supabase related
+.supabase/
+
+# Database-related
+data/
+*.db
+dump.sql
+mongod.lock
