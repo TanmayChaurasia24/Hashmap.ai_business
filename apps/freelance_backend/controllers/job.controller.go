@@ -9,7 +9,9 @@ import (
 	"golang-freelance_backend/models"
 	"net/http"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func Jobposting(res http.ResponseWriter, req *http.Request) {
@@ -31,6 +33,17 @@ func Jobposting(res http.ResponseWriter, req *http.Request) {
 
 	jobs.ID = primitive.NewObjectID()
 	collection := database.GetJobsCollection()
+
+	filter := bson.D{{Key: "applicationurl", Value: jobs.Applicationurl}}
+	var existingjobs models.Jobs
+	err = collection.FindOne(context.TODO(), filter).Decode(&existingjobs)
+	if err == nil {
+		http.Error(res, "Job posting with same application URL is present", http.StatusConflict)
+		return
+	} else if err != mongo.ErrNoDocuments {
+		http.Error(res, "Error in finding existing job posting", http.StatusInternalServerError)
+		return
+	}
 
 	savedJob, err := collection.InsertOne(context.TODO(), jobs)
 	if err != nil {
