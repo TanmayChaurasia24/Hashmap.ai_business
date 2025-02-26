@@ -12,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func Jobposting(res http.ResponseWriter, req *http.Request) {
@@ -78,4 +79,64 @@ func Jobposting(res http.ResponseWriter, req *http.Request) {
 		"message": "Job posted successfully",
 		"job":     jobs,
 	})
+}
+
+func Activejobs(res http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodGet {
+		http.Error(res, "Invalid request method", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println("inside activejobs function...")
+
+	collection := database.GetJobsCollection()
+	var alljobs []models.Jobs
+
+	cursor, err := collection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		http.Error(res, "Failed to fetch jobs", http.StatusInternalServerError)
+		return
+	}
+
+	defer cursor.Close(context.TODO())
+
+	if err := cursor.All(context.TODO(), &alljobs); err != nil {
+		http.Error(res, "error while fetching all the job posting", http.StatusInternalServerError)
+		return
+	}
+
+	res.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(res).Encode(alljobs)
+}
+
+func Recentjobs(res http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodGet {
+		http.Error(res, "Invalid request method", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println("inside recentjobs function...")
+
+	collection := database.GetJobsCollection()
+	var recentjob []models.Jobs
+
+	opts := options.Find()
+	opts.SetSort(bson.D{{Key: "createdAt", Value: -1}})
+	opts.SetLimit(10)
+
+	cursor, err := collection.Find(context.TODO(), bson.M{}, opts)
+	if err != nil {
+		http.Error(res, "Failed to fetch jobs", http.StatusInternalServerError)
+		return
+	}
+
+	defer cursor.Close(context.TODO())
+
+	if err := cursor.All(context.TODO(), &recentjob); err != nil {
+		http.Error(res, "error while fetching all the job posting", http.StatusInternalServerError)
+		return
+	}
+
+	res.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(res).Encode(recentjob)
 }
